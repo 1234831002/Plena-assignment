@@ -5,9 +5,9 @@ import { UserDto } from "src/dto/user.dto";
 @Controller("users")
 export class UserController {
     constructor(private userService: UserService) { }
-    @Get("search")
-    searchUser() {
-        return "Search user working!!"
+    @Post("search")
+    searchUser(@Body() user: UserDto) {
+        return this.userService.search(user)
     }
     @Post("")
     saveUser(@Body() user: UserDto) {

@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDate, IsPositive, IsString, Length } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsNumber, IsPositive, IsString, Length } from 'class-validator';
 
 export class UserDto {
     @IsString()
@@ -13,8 +13,14 @@ export class UserDto {
     @IsDate()
     birthdate: Date;
 
+    @IsBoolean()
+    isActive: Boolean;
+
     @IsArray()
     blockerUsers: Array<string>;
+
+    @IsPositive()
+    age:Number
 
     id?: string;
 }
