@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { environment } from './environments/environment';
-import { User, UserSchema } from './schemas/users';
 
 @Module({
   imports: [
