@@ -4,12 +4,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UserDto } from "src/dto/user.dto";
 import { search } from "src/_models/search";
+import { RedisService } from "src/config/redis.config";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(User.name)
-        private readonly userRepository: Model<UserDocument>,
+        private readonly userRepository: Model<UserDocument>, private redisService: RedisService
     ) { }
     async search(data) {
         let userSearch = new search(data)
@@ -21,8 +22,14 @@ export class UserService {
             { "$gte": userSearch.minAge, "$lte": userSearch.maxAge } :
             (userSearch.maxAge == 0 ? { "$gte": userSearch.minAge } : { "$lte": userSearch.maxAge })
         searchQuery["isActive"] = true
-
-        return this.userRepository.find(searchQuery)
+        const cacheKey = JSON.stringify(searchQuery)
+        const cachedResult = await this.redisService.get(cacheKey);
+        if (cachedResult) {
+            return JSON.parse(cachedResult);
+        }
+        const users = await this.userRepository.find(searchQuery)
+        await this.redisService.set(cacheKey, JSON.stringify(users), 3600);
+        return users
     }
     async saveUser(user: UserDto): Promise<User> {
         user.age = this.getAge(user.birthdate)

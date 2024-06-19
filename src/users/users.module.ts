@@ -3,11 +3,12 @@ import { UserController } from './users.controller';
 import { UserService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/schemas/users';
+import { RedisService } from 'src/config/redis.config';
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ],
     controllers: [UserController],
-    providers: [UserService]
+    providers: [UserService,RedisService]
 })
 export class UsersModule { }
