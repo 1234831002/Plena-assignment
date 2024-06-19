@@ -4,6 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UserDto } from "src/dto/user.dto";
 import { search } from "src/_models/search";
+
 @Injectable()
 export class UserService {
     constructor(
@@ -19,12 +20,19 @@ export class UserService {
         searchQuery["age"] = (userSearch.maxAge != 0 && userSearch.minAge != 0) ?
             { "$gte": userSearch.minAge, "$lte": userSearch.maxAge } :
             (userSearch.maxAge == 0 ? { "$gte": userSearch.minAge } : { "$lte": userSearch.maxAge })
+        searchQuery["isActive"] = true
 
         return this.userRepository.find(searchQuery)
     }
     async saveUser(user: UserDto): Promise<User> {
         user.age = this.getAge(user.birthdate)
         return this.userRepository.create(user)
+    }
+    async updateUser(user: UserDto): Promise<User> {
+        let userDetails = await this.userRepository.findById(user.id)
+        Object.assign(userDetails, user)
+        await userDetails.save()
+        return userDetails
     }
     getAge(dateString: Date) {
         let today = new Date();
