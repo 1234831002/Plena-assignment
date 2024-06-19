@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -11,14 +11,21 @@ export class User {
     @Prop()
     surname: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     userName: string;
+
+    @Prop({ type: Number })
+    age: Number;
 
     @Prop({ type: Date })
     birthdate: Date;
+    
+    @Prop({ type: Boolean, default: true })
+    isActive: Boolean;
 
-    // @Prop({ type: SchemaTypes.Array, ref: User })
-    // blockedUsers: Array<User>;
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: "users" })
+    blockedUsers: [mongoose.Schema.Types.ObjectId];
+
     _id: Types.ObjectId;
 }
 
